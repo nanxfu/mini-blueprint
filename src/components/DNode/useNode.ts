@@ -3,9 +3,11 @@ import {ref} from "vue";
 let clickedNode: HTMLElement;
 let dragging = false;
 let mousePoint: PointerEvent| null;
-export let topNode = ref<HTMLElement>()
+let initPosition:DOMRect
+let ratio = 1
 export interface nodeProperties {
     title: string,
+    output?:string
 }
 export function dragable(_ele: HTMLElement, _mousePoint: PointerEvent) {
     if (dragging) {
@@ -21,14 +23,19 @@ export function dragable(_ele: HTMLElement, _mousePoint: PointerEvent) {
     }
     clickedNode = _ele;
     clickedNode.style.zIndex = '10'
+    initPosition = clickedNode.getBoundingClientRect()
     mousePoint = _mousePoint;
     dragging = true;
 }
-
+export function changeRatio(){
+    ratio = 1.5
+}
 function handleDragging(e: MouseEvent) {
     if (dragging) {
-        clickedNode.style.left = `${-mousePoint!.offsetX + e.clientX}px`;
-        clickedNode.style.top = `${-mousePoint!.offsetY + e.clientY}px`;
+        console.log(e.offsetY - mousePoint!.offsetY)
+        //todo 改为鼠标到画布的位置
+        clickedNode.style.left = `${(initPosition.left+ -mousePoint!.clientX + e.clientX)/ratio}px`;
+        clickedNode.style.top = `${(initPosition.top +- mousePoint!.clientY + e.clientY)/ratio}px`;
     }
 }
 

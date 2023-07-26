@@ -3,7 +3,7 @@ import Scene from "./components/Scene/Scene.vue";
 </script>
 
 <template>
-    <div>
+    <div class="overflow-hidden">
         <scene></scene>
     </div>
 
