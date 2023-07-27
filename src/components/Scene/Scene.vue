@@ -2,7 +2,7 @@
   <!--  //fabric-->
   <!--  canvas-->
   <!--  viewport-->
-  <div class="_container h-screen w-screen overflow-scroll" ref="canvas">
+  <div class="_container h-screen w-screen overflow-hidden" ref="canvas">
     <div id="stage" ref="stageRef" class="relative w-[2000px] h-[2000px] origin-top-left" @mousemove="dragCanvas"
          @mousedown="mousedown" @mouseup="mouseup">
       <span

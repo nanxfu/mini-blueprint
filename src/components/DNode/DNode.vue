@@ -22,6 +22,7 @@ function handleDrage(e) {
   // if(nodeRef.value.style) nodeRef.value.style = '6px'
   // absolute元素相对position是相对于父元素的content区域，margin不参与计算
   dragable(nodeRef!.value, e)
+  console.log(e)
 }
 
 
