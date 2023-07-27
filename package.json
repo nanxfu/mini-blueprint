@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "html-to-image": "^1.11.11",
     "pinia": "^2.1.4",
     "vue": "^3.2.47"
   },

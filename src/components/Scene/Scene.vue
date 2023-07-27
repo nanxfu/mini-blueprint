@@ -6,12 +6,12 @@
     <div id="stage" ref="stageRef" class="relative w-[2000px] h-[2000px] origin-top-left" @mousemove="dragCanvas"
          @mousedown="mousedown" @mouseup="mouseup">
       <span
-          class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10"
+          class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10 select-none"
           style="z-index: 100"
           @click="handler">Badge
       </span>
       <span
-          class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10"
+          class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10 select-none"
           style="z-index: 100"
           @click="changeScale">changeScale
       </span>
