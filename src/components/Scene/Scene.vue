@@ -29,9 +29,13 @@ const nodes = ref<Array<nodeProperties>>([])
 const canvas = ref<HTMLElement>()
 const stageRef = ref()
 const drag = ref(false)
-const startCoord = {
+const startClickCoord = {
   x: 0,
   y: 0
+}
+const startScrollCoord = {
+  left:0,
+  top:0
 }
 function handler() {
   nodes.value.push({
@@ -46,20 +50,20 @@ function changeScale() {
 
 function mousedown(e: PointerEvent) {
   drag.value = true
-  console.log(e.clientX)
-  startCoord.x = e.clientX
-  startCoord.y = e.clientY
+  startClickCoord.x = e.clientX
+  startClickCoord.y = e.clientY
+  startScrollCoord.left = canvas.value!.scrollLeft
+  startScrollCoord.top = canvas.value!.scrollTop
 }
 function mouseup() {
   drag.value = false
 }
 function dragCanvas(e: MouseEvent) {
   if(drag.value) {
-    let relX = e.clientX - startCoord.x
-    let relY = e.clientY - startCoord.y
-    canvas.value!.scrollLeft += -relX *0.02
-    console.log(-relX *0.1)
-    canvas.value!.scrollTop += -relY*0.02
+    let relX = e.clientX - startClickCoord.x
+    let relY = e.clientY - startClickCoord.y
+    canvas.value!.scrollLeft = startScrollCoord.left - relX *0.2
+    canvas.value!.scrollTop = startScrollCoord.top -relY*0.5
   }
 }
 
