@@ -1,34 +1,38 @@
 <template>
   <div>
-    <div class="fixed w-48 h-44 top-0 right-0 m-5 bg-gray-500" >
-      <img src="">
+    <div class="fixed w-48 h-48 top-0 right-0 m-5 bg-gray-500" @click="capture">
+       <img class="object-scale-down" src="https://img2.baidu.com/it/u=3329909248,3799019568&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500" ref="view">
     </div>
-    <span
-        class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10 select-none"
-        style="z-index: 100"
-        @click="capture">changeScale
-      </span>
-  </div>
 
+  </div>
 
 </template>
 
 <script setup lang="ts">
 import * as htmlToImage from 'html-to-image';
 import {ref} from "vue";
+import html2canvas from "html2canvas";
 
-// const img = ref()
+ const view = ref()
+let container = document.querySelector("._container")
 function capture() {
-  var node = document.getElementById('app');
-  htmlToImage.toPng(node)
-      .then(function (dataUrl) {
-        var img = new Image();
-        img.src = dataUrl;
-        document.body.appendChild(img);
-      })
-      .catch(function (error) {
-        console.error('oops, something went wrong!', error);
-      });
+  html2canvas(document.querySelector("#app"),{
+    height: 1000,
+  scrollY:-500
+  }).then(canvas => {
+    document.body.appendChild(canvas)
+  });
+  // var node = document.getElementById('app');
+  // htmlToImage.toPng(node, {
+  //   height:1000,
+  //   canvasHeight:1000
+  // })
+  //     .then(function (dataUrl) {
+  //       view.value.src = dataUrl
+  //     })
+  //     .catch(function (error) {
+  //       console.log(error)
+  //     });
 }
 </script>
 
