@@ -6,16 +6,8 @@
 
 <script setup lang="ts">
 import {computed} from "vue";
+import {Coord, LineProps} from "./useLine";
 
-interface Coord {
-  x: number,
-  y: number
-}
-
-interface LineProps {
-  inputCoord: Coord,
-  outputCoord: Coord
-}
 
 const props = defineProps<LineProps>()
 const dProp = computed(()=>`M ${props.inputCoord.x} ${props.inputCoord.y} C ${middlePoint.x} ${props.inputCoord.y}, ${middlePoint.x} ${props.outputCoord.y}, ${props.outputCoord.x} ${props.outputCoord.y}`)

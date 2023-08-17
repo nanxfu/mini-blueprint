@@ -8,7 +8,7 @@
         <d-node title="233"></d-node>
         <d-node title="236"></d-node>
         <d-node title="244"></d-node>
-        <d-line :input-coord=start :output-coord=end></d-line>
+        <d-line v-for="(line,key) in lines" :key="key" :input-coord="line.inputCoord" :output-coord="line.outputCoord"></d-line>
       </g>
     </svg>
   </div>
@@ -17,8 +17,12 @@
 <script setup lang="ts">
 import {ref} from "vue";
 import DNode from "../DNode/DNode.vue";
-import DLine from "../DLine.vue";
-
+import DLine from "../DLine/DLine.vue";
+import {nodeProperties} from "../DNode/useNode";
+import {useLinesStore} from "../../store/Lines";
+const nodes:Array<nodeProperties> = []
+const useLines = useLinesStore()
+let lines = useLines.lines
 const canvas = ref<HTMLElement>()
 const start = {
   x: 50,
