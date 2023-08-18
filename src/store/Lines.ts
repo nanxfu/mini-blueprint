@@ -1,5 +1,5 @@
 import {defineStore} from "pinia";
-import {LineProps} from "../components/DLine/useLine";
+import {Coord, LineProps} from "../components/DLine/useLine";
 
 export const useLinesStore = defineStore('lines', {
     state: () => ({
@@ -8,6 +8,9 @@ export const useLinesStore = defineStore('lines', {
     actions: {
         addLines(vector:LineProps){
             this.lines.push(vector)
+        },
+        fixLines(id, pos: Coord){
+
         }
     }
 })
