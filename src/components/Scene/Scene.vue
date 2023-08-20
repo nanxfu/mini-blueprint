@@ -2,7 +2,7 @@
   <!--  //fabric-->
   <!--  canvas-->
   <!--  viewport-->
-  <div class="_container h-screen w-screen overflow-hidden" ref="canvas">
+  <div class="_container h-screen w-screen overflow-hidden" ref="canvas" @mousemove="updateMousePos">
     <svg width="100%" height="100%">
       <rect x="30" y="30" height="120" width="210" @click.stop="addDNode">增加DNode</rect>
       <rect x="100" y="100" height="120" width="210" @click.stop="click">增加DNode</rect>
@@ -16,15 +16,18 @@
 </template>
 
 <script setup lang="ts">
-import {ref, watch, watchEffect} from "vue";
+import {ref} from "vue";
 import {v4 as uuidv4} from 'uuid';
 import DNode from "../DNode/DNode.vue";
 import DLine from "../DLine/DLine.vue";
 import {useLinesStore} from "../../store/Lines";
 import {useDNodesStore} from "../../store/DNodes";
+import {useGlobalStateStore} from "../../store/globalState";
+// import {useMouseMove} from "./useScene";
 
 const useLines = useLinesStore()
 const useDNodes = useDNodesStore()
+const useGlobalState = useGlobalStateStore()
 const canvas = ref<HTMLElement>()
 let DNodes = useDNodes.DNodes
 let lines = useLines.lines
@@ -38,6 +41,14 @@ function addDNode() {
 
 function click() {
   useDNodes.deleteDNode(1)
+}
+function updateMousePos(e: MouseEvent){
+  let x = e.clientX
+  let y = e.clientY
+  useGlobalState.updateMousePos({
+    x,
+    y
+  })
 }
 </script>
 

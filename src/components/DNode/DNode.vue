@@ -1,5 +1,5 @@
 <template>
-  <g x="30" y="30" :transform="transformMatrix" @click.stop="handleClick" @mousemove="dragNode">
+  <g x="30" y="30" :transform="transformMatrix" @click.stop="handleClick">
     <foreignObject width="192" height="128">
       <div class="node absolute resize shadow-blue-500/50" ref="nodeRef">
         <div class="flex flex-col w-48 h-32 rounded-md bg-gray-700 ">
@@ -23,6 +23,8 @@ import {Coord} from "../DLine/useLine";
 import {useLinesStore} from "../../store/Lines";
 import {v4 as uuid} from "uuid";
 import {useDNodesStore} from "../../store/DNodes";
+import {useGlobalStateStore} from "../../store/globalState";
+// import {useMouseMove} from "../Scene/useScene";
 
 const props = defineProps<nodeProps>()
 const nodeRef = ref()
@@ -42,19 +44,22 @@ watch([NodeCoord], ()=>{
   ConnectedPointCoord.x = NodeCoord.x + NodeWidth
   ConnectedPointCoord.y = NodeCoord.y + NodeHeight
 })
-// const ConnectedPointCoord = computed(() => ({
-//   x: NodeCoord.x + NodeWidth,
-//   y: NodeCoord.y + NodeHeight
-// }))
-// const ConnectedPoint = calcCenterCoord(connectPoint.value)
+
 const clickCoord: Coord = {
   x: 0,
   y: 0
 }
 const useLines = useLinesStore()
-//不是保存结点位置，而是保存结点连接处中心位置
-mapIdToCoord(props.id, ConnectedPointCoord)
-let useDNode = useDNodesStore()
+const useDNode = useDNodesStore()
+const useGlobalState = useGlobalStateStore()
+watch(()=>useGlobalState.mousePos,()=>{
+  if (draging.value) {
+    let deltaX = useGlobalState.mousePos.x - clickCoord.x
+    let deltaY = useGlobalState.mousePos.y - clickCoord.y
+    NodeCoord.x = NodeCoordWhenClicked.x + deltaX / scaleRatio
+    NodeCoord.y = NodeCoordWhenClicked.y + deltaY / scaleRatio
+  }
+},{deep: true})
 let NodeCoordWhenClicked: Coord = {
   x: 0,
   y: 0
@@ -72,16 +77,11 @@ function handleClick(e) {
   NodeCoordWhenClicked = {...NodeCoord}
 }
 
-function dragNode(e: MouseEvent) {
-  if (draging.value) {
-    let deltaX = e.clientX - clickCoord.x
-    let deltaY = e.clientY - clickCoord.y
-    NodeCoord.x = NodeCoordWhenClicked.x + deltaX / scaleRatio
-    NodeCoord.y = NodeCoordWhenClicked.y + deltaY / scaleRatio
-  }
-}
 
 function handleConnect(e: PointerEvent) {
+  //不是保存结点位置，而是保存结点连接处中心位置
+  //仅保存被连接的结点，而非所有结点
+  mapIdToCoord(props.id, ConnectedPointCoord)
   if (!useDNode.preNodeID) {
     //检查是第一次按下
     //是否仅移动曲线
