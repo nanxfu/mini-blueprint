@@ -7,7 +7,7 @@
             <h1 class="flex-1 text-white text-center  select-none">
               {{ props.title }}</h1>
             <div class="w-4 h-4 mr-2 hover:scale-110 shadow-md rounded-full bg-slate-100"
-                 @click.stop="handleConnect"></div>
+                 @click.stop="handleConnect" ref="connectPointRef"></div>
           </header>
         </div>
       </div>
@@ -17,31 +17,49 @@
 
 <script setup lang="ts">
 
-import {computed, reactive, ref, unref} from "vue";
-import {nodeProperties} from "./useNode"
-import {Coord, handleNodesConnect} from "../DLine/useLine";
+import {computed, reactive, ref, watch} from "vue";
+import {calcCenterCoord, mapIdToCoord, nodeProps} from "./useNode"
+import {Coord} from "../DLine/useLine";
+import {useLinesStore} from "../../store/Lines";
+import {v4 as uuid} from "uuid";
+import {useDNodesStore} from "../../store/DNodes";
 
-const props = defineProps<nodeProperties>()
+const props = defineProps<nodeProps>()
 const nodeRef = ref()
-
 const draging = ref(false)
 const transformMatrix = computed(() => `matrix(1,0,0,1,${NodeCoord.x},${NodeCoord.y})`)
-
-const NodeCoord = reactive<Coord>({
+const NodeCoord: Coord = reactive({
   x: 0,
   y: 0
 })
+const NodeWidth = 176
+const NodeHeight = 10
+const ConnectedPointCoord:Coord = reactive({
+  x: 0,
+  y: 0
+})
+watch([NodeCoord], ()=>{
+  ConnectedPointCoord.x = NodeCoord.x + NodeWidth
+  ConnectedPointCoord.y = NodeCoord.y + NodeHeight
+})
+// const ConnectedPointCoord = computed(() => ({
+//   x: NodeCoord.x + NodeWidth,
+//   y: NodeCoord.y + NodeHeight
+// }))
+// const ConnectedPoint = calcCenterCoord(connectPoint.value)
 const clickCoord: Coord = {
   x: 0,
   y: 0
 }
-
+const useLines = useLinesStore()
+//不是保存结点位置，而是保存结点连接处中心位置
+mapIdToCoord(props.id, ConnectedPointCoord)
+let useDNode = useDNodesStore()
 let NodeCoordWhenClicked: Coord = {
   x: 0,
   y: 0
 }
 let scaleRatio = 1
-
 
 function handleClick(e) {
   if (draging.value) {
@@ -64,6 +82,20 @@ function dragNode(e: MouseEvent) {
 }
 
 function handleConnect(e: PointerEvent) {
-  handleNodesConnect(e)
+  if (!useDNode.preNodeID) {
+    //检查是第一次按下
+    //是否仅移动曲线
+    //绑定inputNode的id
+    useDNode.preNodeID = props.id
+  } else {
+    //绑定outputNode的id
+    useLines.addLines({
+      id: uuid(),
+      inputDnode: useDNode.preNodeID,
+      outputDnode: props.id
+    })
+    useDNode.preNodeID = ''
+  }
 }
+
 </script>

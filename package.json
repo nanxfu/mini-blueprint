@@ -12,9 +12,11 @@
     "html-to-image": "^1.11.11",
     "html2canvas": "^1.4.1",
     "pinia": "^2.1.6",
-    "vue": "^3.2.47"
+    "uuid": "^9.0.0",
+    "vue": "^3.3.4"
   },
   "devDependencies": {
+    "@types/uuid": "^9.0.2",
     "@vitejs/plugin-vue": "^4.1.0",
     "autoprefixer": "^10.4.14",
     "postcss": "^8.4.26",
