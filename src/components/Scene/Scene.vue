@@ -12,7 +12,7 @@
                 ref="itemRefs"></d-node>
         <d-line v-for="(line,index) in lines" :key="index" :id="line.id" :index="index" :input-dnode="line.inputDnode"
                 :output-dnode="line.outputDnode" :is-connected-line="true"></d-line>
-        <d-line :is-connected-line="false" id="aaa" ></d-line>>
+        <d-line :is-connected-line="false" id="aaa" v-show="ConnectingNodes"></d-line>>
       </g>
     </svg>
   </div>
@@ -34,6 +34,7 @@ const canvas = ref<HTMLElement>()
 let DNodes = useDNodes.DNodes
 let lines = useLines.lines
 let itemRefs = ref([])
+const {preNodeID} = storeToRefs(useDNodes)
 const {mousePos, ConnectingNodes} = storeToRefs(useGlobalState)
 
 function addDNode() {
@@ -59,6 +60,7 @@ function updateMousePos(e: MouseEvent) {
  */
 function handleClickBlankArea() {
   ConnectingNodes.value = false
+  preNodeID.value = ''
 }
 </script>
 

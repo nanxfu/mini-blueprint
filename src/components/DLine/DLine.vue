@@ -19,6 +19,7 @@ const {preNodeID} = storeToRefs(useDNodesStore())
 let middlePoint
 
 let dProp = ref('')
+let curveWrap = ref('')
 //触发曲线位置改变的方式
 //1.绑定的结点位置移动
 //2.未完成结点连接时曲线跟随鼠标移动
@@ -32,6 +33,7 @@ if (props.isConnectedLine) {
   let [inputCoord, outputCoord] = useBindingNodeCoord(props.inputDnode as string, props.outputDnode as string)
   middlePoint = computed<Coord>(() => calcMiddlePoint(inputCoord, outputCoord))
   const curvePos = computed(() => `M ${inputCoord.x} ${inputCoord.y} C ${middlePoint.value.x} ${inputCoord.y}, ${middlePoint.value.x} ${outputCoord.y}, ${outputCoord.x} ${outputCoord.y}`)
+
   watch(curvePos, () => {
     dProp.value = curvePos.value
   }, {immediate: true})
