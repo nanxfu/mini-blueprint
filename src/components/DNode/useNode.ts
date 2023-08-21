@@ -14,7 +14,7 @@ export function mapIdToCoord(id:string, coord:Coord){
     map.set(id, coord)
 }
 
-export function getCoord(id){
+export function getCoord(id: string){
     return map.get(id)
 }
 export function deleteCoord(){

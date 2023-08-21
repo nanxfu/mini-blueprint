@@ -2,14 +2,17 @@
   <!--  //fabric-->
   <!--  canvas-->
   <!--  viewport-->
-  <div class="_container h-screen w-screen overflow-hidden" ref="canvas" @mousemove="updateMousePos">
+  <div class="_container h-screen w-screen overflow-hidden" ref="canvas" @click="handleClickBlankArea"
+       @mousemove="updateMousePos">
     <svg width="100%" height="100%">
       <rect x="30" y="30" height="120" width="210" @click.stop="addDNode">增加DNode</rect>
       <rect x="100" y="100" height="120" width="210" @click.stop="click">增加DNode</rect>
       <g transform="matrix(1,0,0,1,0,0)">
-        <d-node v-for="(DNode, index) in DNodes" :key="DNode.id" :index="index" :id="DNode.id" :title="DNode.title" ref="itemRefs"></d-node>
-
-        <d-line v-for="(line,index) in lines" :key="index" :id="line.id" :index="index" :input-dnode="line.inputDnode" :output-dnode="line.outputDnode"></d-line>
+        <d-node v-for="(DNode, index) in DNodes" :key="DNode.id" :index="index" :id="DNode.id" :title="DNode.title"
+                ref="itemRefs"></d-node>
+        <d-line v-for="(line,index) in lines" :key="index" :id="line.id" :index="index" :input-dnode="line.inputDnode"
+                :output-dnode="line.outputDnode" :is-connected-line="true"></d-line>
+        <d-line :is-connected-line="false" id="aaa" ></d-line>>
       </g>
     </svg>
   </div>
@@ -23,8 +26,7 @@ import DLine from "../DLine/DLine.vue";
 import {useLinesStore} from "../../store/Lines";
 import {useDNodesStore} from "../../store/DNodes";
 import {useGlobalStateStore} from "../../store/globalState";
-// import {useMouseMove} from "./useScene";
-
+import {storeToRefs} from "pinia";
 const useLines = useLinesStore()
 const useDNodes = useDNodesStore()
 const useGlobalState = useGlobalStateStore()
@@ -32,6 +34,7 @@ const canvas = ref<HTMLElement>()
 let DNodes = useDNodes.DNodes
 let lines = useLines.lines
 let itemRefs = ref([])
+const {mousePos, ConnectingNodes} = storeToRefs(useGlobalState)
 
 function addDNode() {
   let title = (Math.random() * 100).toString().slice(0, 4)
@@ -42,13 +45,20 @@ function addDNode() {
 function click() {
   useDNodes.deleteDNode(1)
 }
-function updateMousePos(e: MouseEvent){
+
+function updateMousePos(e: MouseEvent) {
   let x = e.clientX
   let y = e.clientY
-  useGlobalState.updateMousePos({
-    x,
-    y
-  })
+  mousePos.value.x = x
+  mousePos.value.y = y
+
+}
+
+/*
+处理鼠标点击空舞台时的状态
+ */
+function handleClickBlankArea() {
+  ConnectingNodes.value = false
 }
 </script>
 

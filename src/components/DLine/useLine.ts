@@ -9,8 +9,9 @@ import {useLinesStore} from "../../store/Lines";
 export interface LineProps {
     id: string,
     index?: number
-    inputDnode: string,
-    outputDnode: string
+    inputDnode?: string,
+    outputDnode?: string
+    isConnectedLine?: boolean
 }
 
 export interface Coord {
@@ -20,7 +21,6 @@ export interface Coord {
 
 
 export function useBindingNodeCoord(inputDNodeID: string, outputDNodeID: string) {
-
     let inputCoord = getCoord(inputDNodeID)
     let outputCoord = getCoord(outputDNodeID)
     return [inputCoord, outputCoord]
