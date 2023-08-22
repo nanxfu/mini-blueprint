@@ -50,8 +50,6 @@ let stopWatchCurvePos
         }, {
           immediate: true
         })
-      }else{
-        //停止响应式
       }
     },{
       immediate: true
