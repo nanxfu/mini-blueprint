@@ -12,7 +12,8 @@
                 ref="itemRefs"></d-node>
         <d-line v-for="(line,index) in lines" :key="index" :id="line.id" :index="index" :input-dnode="line.inputDnode"
                 :output-dnode="line.outputDnode" :is-connected-line="true"></d-line>
-        <d-line :is-connected-line="false" id="aaa" v-show="ConnectingNodes"></d-line>>
+<!--        v-show改成v-if会导致dProp失效？-->
+        <d-line :is-connected-line="false" id="aaa" key="aaa" v-if="ConnectingNodes"></d-line>
       </g>
     </svg>
   </div>

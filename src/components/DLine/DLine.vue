@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, reactive, ref, watch} from "vue";
+import {computed, onBeforeMount, onMounted, reactive, ref, watch} from "vue";
 import {Coord, LineProps, useBindingNodeCoord} from "./useLine";
 import {useGlobalStateStore} from "../../store/globalState";
 import {useDNodesStore} from "../../store/DNodes";
@@ -19,7 +19,7 @@ const {preNodeID} = storeToRefs(useDNodesStore())
 let middlePoint
 
 let dProp = ref('')
-let curveWrap = ref('')
+let stopWatchCurvePos
 //触发曲线位置改变的方式
 //1.绑定的结点位置移动
 //2.未完成结点连接时曲线跟随鼠标移动
@@ -28,31 +28,35 @@ let curveWrap = ref('')
 //注意中心点也需要变化
 // let middlePoint = calcMiddlePoint(inputCoord, outputCoord)  //自动避免TDZ
 
-if (props.isConnectedLine) {
-  //连接好的线
-  let [inputCoord, outputCoord] = useBindingNodeCoord(props.inputDnode as string, props.outputDnode as string)
-  middlePoint = computed<Coord>(() => calcMiddlePoint(inputCoord, outputCoord))
-  const curvePos = computed(() => `M ${inputCoord.x} ${inputCoord.y} C ${middlePoint.value.x} ${inputCoord.y}, ${middlePoint.value.x} ${outputCoord.y}, ${outputCoord.x} ${outputCoord.y}`)
+  if (props.isConnectedLine) {
+    //连接好的线
+    let [inputCoord, outputCoord] = useBindingNodeCoord(props.inputDnode as string, props.outputDnode as string)
+    middlePoint = computed<Coord>(() => calcMiddlePoint(inputCoord, outputCoord))
+    const curvePos = computed(() => `M ${inputCoord.x} ${inputCoord.y} C ${middlePoint.value.x} ${inputCoord.y}, ${middlePoint.value.x} ${outputCoord.y}, ${outputCoord.x} ${outputCoord.y}`)
 
-  watch(curvePos, () => {
-    dProp.value = curvePos.value
-  }, {immediate: true})
-} else {
-  watch(ConnectingNodes, () => {
-    if (ConnectingNodes.value) {
-      let inputCoord = getCoord(preNodeID.value)
-      let outputCoord = mousePos.value
-      //未连接好的线
-      middlePoint = computed<Coord>(() => calcMiddlePoint(inputCoord, outputCoord))
-      const curvePos = computed(() => `M ${inputCoord.x} ${inputCoord.y} C ${middlePoint.value.x} ${inputCoord.y}, ${middlePoint.value.x} ${outputCoord.y}, ${outputCoord.x} ${outputCoord.y}`)
-      watch(curvePos, () => {
-        dProp.value = curvePos.value
-      }, {
-        immediate: true
-      })
-    }
-  })
-}
+    watch(curvePos, () => {
+      dProp.value = curvePos.value
+    }, {immediate: true})
+  } else {
+    watch(ConnectingNodes, () => {
+      if (ConnectingNodes.value) {
+        let inputCoord = getCoord(preNodeID.value)
+        let outputCoord = mousePos.value
+        //未连接好的线
+        middlePoint = computed<Coord>(() => calcMiddlePoint(inputCoord, outputCoord))
+        const curvePos = computed(() => `M ${inputCoord.x} ${inputCoord.y} C ${middlePoint.value.x} ${inputCoord.y}, ${middlePoint.value.x} ${outputCoord.y}, ${outputCoord.x} ${outputCoord.y}`)
+        stopWatchCurvePos = watch(curvePos, () => {
+          dProp.value = curvePos.value
+        }, {
+          immediate: true
+        })
+      }else{
+        //停止响应式
+      }
+    },{
+      immediate: true
+    })
+  }
 
 
 function calcMiddlePoint(start: Coord, end: Coord): Coord {
