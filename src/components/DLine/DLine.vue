@@ -67,5 +67,7 @@ function calcMiddlePoint(start: Coord, end: Coord): Coord {
 </script>
 
 <style scoped>
-
+path {
+  pointer-events: none;
+}
 </style>

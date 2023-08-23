@@ -6,12 +6,10 @@
        @mousemove="updateMousePos">
     <svg width="100%" height="100%">
       <g>
-<!--        <foreignObject width="192" height="128">-->
-<!--          <span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10" @click.stop="addDNode">Badge</span>-->
-<!--        </foreignObject>-->
-<!--        console-->
-      <rect x="30" y="30" height="120" width="210" @click.stop="addDNode">增加DNode</rect>
-      <rect x="100" y="100" height="120" width="210" @click.stop="click">增加DNode</rect>
+        <!--        console-->
+        <foreignObject width="192" height="128">
+          <span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10" @click.stop="addDNode">Badge</span>
+        </foreignObject>
       </g>
       <g transform="matrix(1,0,0,1,0,0)">
         <d-node v-for="(DNode, index) in DNodes" :key="DNode.id" :index="index" :id="DNode.id" :title="DNode.title"
@@ -72,4 +70,5 @@ function handleClickBlankArea() {
 </script>
 
 <style scoped>
+
 </style>
