@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 
-import {computed, reactive, ref, watch} from "vue";
+import {computed, reactive, ref, watch, WatchStopHandle} from "vue";
 import {mapIdToCoord, nodeProps} from "./useNode"
 import {Coord} from "../DLine/useLine";
 import {useLinesStore} from "../../store/Lines";
@@ -32,6 +32,7 @@ const useDNode = useDNodesStore()
 const useGlobalState = useGlobalStateStore()
 const nodeRef = ref()
 const draging = ref(false)
+let stopWatchMousePos: WatchStopHandle
 const transformMatrix = computed(() => `matrix(1,0,0,1,${NodeCoord.x},${NodeCoord.y})`)
 /*
 记录结点坐标
@@ -69,15 +70,7 @@ let NodeCoordWhenClicked: Coord = {
   y: 0
 }
 
-//观测鼠标位置
-watch(mousePos.value, () => {
-  if (draging.value) {
-    let deltaX = mousePos.value.x - ClickCoord.x
-    let deltaY = mousePos.value.y - ClickCoord.y
-    NodeCoord.x = NodeCoordWhenClicked.x + deltaX / scaleRatio
-    NodeCoord.y = NodeCoordWhenClicked.y + deltaY / scaleRatio
-  }
-}, {deep: true})
+
 //观测结点位置使得连接结点跟着变化
 watch([NodeCoord], () => {
   ConnectedPointCoord.x = NodeCoord.x + NodeWidth
@@ -89,8 +82,18 @@ let scaleRatio = 1
 function handleClick(e) {
   if (draging.value) {
     draging.value = false
+    stopWatchMousePos()
   } else {
     draging.value = true
+    //观测鼠标位置
+    stopWatchMousePos = watch(mousePos.value, () => {
+      if (draging.value) {
+        let deltaX = mousePos.value.x - ClickCoord.x
+        let deltaY = mousePos.value.y - ClickCoord.y
+        NodeCoord.x = NodeCoordWhenClicked.x + deltaX / scaleRatio
+        NodeCoord.y = NodeCoordWhenClicked.y + deltaY / scaleRatio
+      }
+    }, {deep: true})
   }
   ClickCoord.x = e.clientX
   ClickCoord.y = e.clientY

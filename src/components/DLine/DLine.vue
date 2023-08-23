@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onBeforeMount, onMounted, reactive, ref, watch} from "vue";
+import {computed, ref, watch} from "vue";
 import {Coord, LineProps, useBindingNodeCoord} from "./useLine";
 import {useGlobalStateStore} from "../../store/globalState";
 import {useDNodesStore} from "../../store/DNodes";
