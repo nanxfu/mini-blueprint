@@ -26,14 +26,18 @@ import {useDNodesStore} from "../../store/DNodes";
 import {useGlobalStateStore} from "../../store/globalState";
 import {storeToRefs} from "pinia";
 
+let scaleRatio = 1
+let stopWatchMousePos: WatchStopHandle
 const props = defineProps<nodeProps>()
 const useLines = useLinesStore()
 const useDNode = useDNodesStore()
 const useGlobalState = useGlobalStateStore()
 const nodeRef = ref()
 const draging = ref(false)
-let stopWatchMousePos: WatchStopHandle
 const transformMatrix = computed(() => `matrix(1,0,0,1,${NodeCoord.x},${NodeCoord.y})`)
+const NodeWidth = 176
+const NodeHeight = 10
+
 /*
 记录结点坐标
  */
@@ -41,8 +45,7 @@ const NodeCoord: Coord = reactive({
   x: 0,
   y: 0
 })
-const NodeWidth = 176
-const NodeHeight = 10
+
 /*
 记录连接点的左边
  */
@@ -72,12 +75,10 @@ let NodeCoordWhenClicked: Coord = {
 
 
 //观测结点位置使得连接结点跟着变化
-watch([NodeCoord], () => {
+watch(NodeCoord, () => {
   ConnectedPointCoord.x = NodeCoord.x + NodeWidth
   ConnectedPointCoord.y = NodeCoord.y + NodeHeight
 })
-
-let scaleRatio = 1
 
 function handleClick(e) {
   if (draging.value) {
@@ -85,19 +86,18 @@ function handleClick(e) {
     stopWatchMousePos()
   } else {
     draging.value = true
+    ClickCoord.x = e.clientX
+    ClickCoord.y = e.clientY
+    NodeCoordWhenClicked = {...NodeCoord}
     //观测鼠标位置
     stopWatchMousePos = watch(mousePos.value, () => {
-      if (draging.value) {
-        let deltaX = mousePos.value.x - ClickCoord.x
-        let deltaY = mousePos.value.y - ClickCoord.y
-        NodeCoord.x = NodeCoordWhenClicked.x + deltaX / scaleRatio
-        NodeCoord.y = NodeCoordWhenClicked.y + deltaY / scaleRatio
-      }
-    }, {deep: true})
+      let deltaX = mousePos.value.x - ClickCoord.x
+      let deltaY = mousePos.value.y - ClickCoord.y
+      NodeCoord.x = NodeCoordWhenClicked.x + deltaX / scaleRatio
+      NodeCoord.y = NodeCoordWhenClicked.y + deltaY / scaleRatio
+    }, {immediate: true})
   }
-  ClickCoord.x = e.clientX
-  ClickCoord.y = e.clientY
-  NodeCoordWhenClicked = {...NodeCoord}
+
 }
 
 
@@ -122,6 +122,7 @@ function handleConnect(e: PointerEvent) {
     ConnectingNodes.value = false
   }
 }
+
 //todo
 //- 删除结点时连接线正确显示
 //- 点击单个结点时任然正确显示连接线
