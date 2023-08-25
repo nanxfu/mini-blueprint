@@ -14,8 +14,7 @@ import {storeToRefs} from "pinia";
 import {getCoord} from "../DNode/useNode";
 
 const props = defineProps<LineProps>()
-const {mousePos, ConnectingNodes} = storeToRefs(useGlobalStateStore())
-const {preNodeID} = storeToRefs(useDNodesStore())
+const {mousePos, ConnectingNodes, preNodeID} = storeToRefs(useGlobalStateStore())
 let middlePoint
 
 let dProp = ref('')

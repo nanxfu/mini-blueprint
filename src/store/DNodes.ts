@@ -4,7 +4,6 @@ import {nodeProps} from "../components/DNode/useNode";
 export const useDNodesStore = defineStore('DNode', {
     state: () => ({
         DNodes: [] as nodeProps[],
-        preNodeID: ''
     }),
     actions: {
         addDNode(uuid, title) {

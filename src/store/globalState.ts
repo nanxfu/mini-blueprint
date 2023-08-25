@@ -6,11 +6,19 @@ export const useGlobalStateStore = defineStore('globalState', {
     state: () => ({
         mousePos: {} as Coord,
         ConnectingNodes: false,
+        preNodeID: '',
+        lastConnectedDNodesInput: '',
+        lastConnectedDNodesOutput: '',
+
     }),
     actions: {
         updateMousePos(pos: Coord) {
             this.mousePos.x = pos.x
             this.mousePos.y = pos.y
+        },
+        cancelNodesConnecting(){
+            this.ConnectingNodes = false
+            this.preNodeID = ''
         }
     }
 })

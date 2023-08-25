@@ -1,14 +1,13 @@
 <template>
-  <!--  //fabric-->
-  <!--  canvas-->
-  <!--  viewport-->
   <div class="_container h-screen w-screen overflow-hidden" ref="canvas" @click="handleClickBlankArea"
        @mousemove="updateMousePos">
     <svg width="100%" height="100%">
       <g>
         <!--        console-->
         <foreignObject width="192" height="128">
-          <span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10" @click.stop="addDNode">Badge</span>
+          <span
+              class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 select-none"
+              @click.stop="addDNode">Badge</span>
         </foreignObject>
       </g>
       <g transform="matrix(1,0,0,1,0,0)">
@@ -16,7 +15,7 @@
                 ref="itemRefs"></d-node>
         <d-line v-for="(line,index) in lines" :key="index" :id="line.id" :index="index" :input-dnode="line.inputDnode"
                 :output-dnode="line.outputDnode" :is-connected-line="true"></d-line>
-<!--        v-show改成v-if会导致dProp失效？-->
+        <!--        v-show改成v-if会导致dProp失效？-->
         <d-line :is-connected-line="false" id="aaa" key="aaa" v-if="ConnectingNodes"></d-line>
       </g>
     </svg>
@@ -32,6 +31,7 @@ import {useLinesStore} from "../../store/Lines";
 import {useDNodesStore} from "../../store/DNodes";
 import {useGlobalStateStore} from "../../store/globalState";
 import {storeToRefs} from "pinia";
+
 const useLines = useLinesStore()
 const useDNodes = useDNodesStore()
 const useGlobalState = useGlobalStateStore()
@@ -64,8 +64,8 @@ function updateMousePos(e: MouseEvent) {
 处理鼠标点击空舞台时的状态
  */
 function handleClickBlankArea() {
-  ConnectingNodes.value = false
-  preNodeID.value = ''
+  //取消连接
+  useGlobalState.cancelNodesConnecting()
 }
 </script>
 

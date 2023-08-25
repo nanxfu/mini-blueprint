@@ -8,6 +8,7 @@
               {{ props.title }}</h1>
             <div class="w-4 h-4 mr-2 hover:scale-110 shadow-md rounded-full bg-slate-100"
                  @click.stop="handleConnect" ref="connectPointRef"></div>
+            <!--            <slot></slot>-->
           </header>
         </div>
       </div>
@@ -22,7 +23,6 @@ import {mapIdToCoord, nodeProps} from "./useNode"
 import {Coord} from "../DLine/useLine";
 import {useLinesStore} from "../../store/Lines";
 import {v4 as uuid} from "uuid";
-import {useDNodesStore} from "../../store/DNodes";
 import {useGlobalStateStore} from "../../store/globalState";
 import {storeToRefs} from "pinia";
 
@@ -30,14 +30,15 @@ let scaleRatio = 1
 let stopWatchMousePos: WatchStopHandle
 const props = defineProps<nodeProps>()
 const useLines = useLinesStore()
-const useDNode = useDNodesStore()
 const useGlobalState = useGlobalStateStore()
+const {preNodeID, lastConnectedDNodesOutput,lastConnectedDNodesInput} = storeToRefs(useGlobalState)
 const nodeRef = ref()
+const inputDNodes = ref([])
+const outputDNodes = ref([])
 const draging = ref(false)
 const transformMatrix = computed(() => `matrix(1,0,0,1,${NodeCoord.x},${NodeCoord.y})`)
 const NodeWidth = 176
 const NodeHeight = 10
-
 /*
 记录结点坐标
  */
@@ -97,7 +98,6 @@ function handleClick(e) {
       NodeCoord.y = NodeCoordWhenClicked.y + deltaY / scaleRatio
     }, {immediate: true})
   }
-
 }
 
 
@@ -105,26 +105,37 @@ function handleConnect(e: PointerEvent) {
   //不是保存结点位置，而是保存结点连接处中心位置
   //仅保存被连接的结点，而非所有结点
   mapIdToCoord(props.id, ConnectedPointCoord)
-  if (!useDNode.preNodeID) {
+  if (!preNodeID.value) {
     //检查是第一次按下
     //是否仅创建随鼠标移动的曲线
     //绑定inputNode的id
-    useDNode.preNodeID = props.id
+    preNodeID.value = props.id
     ConnectingNodes.value = true
+    //观测是否成功连接直线，成功连接就在outputDNodes中记录值
+    const watchConnected = watch(lastConnectedDNodesOutput, ()=>{
+      outputDNodes.value.push(lastConnectedDNodesOutput.value)
+      watchConnected()
+    })
+
   } else {
+    //判断是否即将连接相同的曲线
+    if (inputDNodes.value.indexOf(preNodeID.value) != -1 || outputDNodes.value.indexOf(preNodeID.value) != -1) {
+      useGlobalState.cancelNodesConnecting()
+      return ;
+    }
     //绑定outputNode的id
+    const id = uuid()
     useLines.addLines({
-      id: uuid(),
-      inputDnode: useDNode.preNodeID,
+      id,
+      inputDnode: preNodeID.value,
       outputDnode: props.id
     })
-    useDNode.preNodeID = ''
+    lastConnectedDNodesOutput.value = props.id
+    lastConnectedDNodesInput.value = preNodeID.value
+    inputDNodes.value.push(preNodeID.value)
+    preNodeID.value = ''
     ConnectingNodes.value = false
   }
 }
 
-//todo
-//- 删除结点时连接线正确显示
-//- 点击单个结点时任然正确显示连接线
-//- 防止重复的两个结点链接 O(n) -> O(1)
 </script>

@@ -2,22 +2,22 @@ import {Coord} from "../DLine/useLine";
 
 
 let map = new Map<string, Coord>()
+
 export interface nodeProps {
     id: string
     title: string,
     index?: number
-    output?: string
-    belongsToDLine?: string
 }
 
-export function mapIdToCoord(id:string, coord:Coord){
+export function mapIdToCoord(id: string, coord: Coord) {
     map.set(id, coord)
 }
 
-export function getCoord(id: string){
+export function getCoord(id: string) {
     return map.get(id)
 }
-export function deleteCoord(){
+
+export function deleteCoord() {
     map.delete(id)
 }
 
