@@ -3,7 +3,7 @@ import {inject, onMounted, ref, VNode} from "vue";
 import DNode from "../DNode/DNode.vue";
 import {v4 as uuid} from "uuid";
 import {getCoord} from "../DNode/useNode";
-import {useLinesStore} from "../../store/Lines";
+import {useLinesStore} from "../../store/DLines";
 
 
 export interface LineProps {

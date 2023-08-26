@@ -27,7 +27,7 @@ import {ref} from "vue";
 import {v4 as uuidv4} from 'uuid';
 import DNode from "../DNode/DNode.vue";
 import DLine from "../DLine/DLine.vue";
-import {useLinesStore} from "../../store/Lines";
+import {useLinesStore} from "../../store/DLines";
 import {useDNodesStore} from "../../store/DNodes";
 import {useGlobalStateStore} from "../../store/globalState";
 import {storeToRefs} from "pinia";
@@ -39,7 +39,7 @@ const canvas = ref<HTMLElement>()
 let DNodes = useDNodes.DNodes
 let lines = useLines.lines
 let itemRefs = ref([])
-const {preNodeID} = storeToRefs(useDNodes)
+
 const {mousePos, ConnectingNodes} = storeToRefs(useGlobalState)
 
 function addDNode() {

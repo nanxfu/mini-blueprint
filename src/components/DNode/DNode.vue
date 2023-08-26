@@ -8,7 +8,6 @@
               {{ props.title }}</h1>
             <div class="w-4 h-4 mr-2 hover:scale-110 shadow-md rounded-full bg-slate-100"
                  @click.stop="handleConnect" ref="connectPointRef"></div>
-            <!--            <slot></slot>-->
           </header>
         </div>
       </div>
@@ -21,7 +20,7 @@
 import {computed, reactive, ref, watch, WatchStopHandle} from "vue";
 import {mapIdToCoord, nodeProps} from "./useNode"
 import {Coord} from "../DLine/useLine";
-import {useLinesStore} from "../../store/Lines";
+import {useLinesStore} from "../../store/DLines";
 import {v4 as uuid} from "uuid";
 import {useGlobalStateStore} from "../../store/globalState";
 import {storeToRefs} from "pinia";
@@ -35,6 +34,7 @@ const {preNodeID, lastConnectedDNodesOutput,lastConnectedDNodesInput} = storeToR
 const nodeRef = ref()
 const inputDNodes = ref([])
 const outputDNodes = ref([])
+const connectedLines = ref([])
 const draging = ref(false)
 const transformMatrix = computed(() => `matrix(1,0,0,1,${NodeCoord.x},${NodeCoord.y})`)
 const NodeWidth = 176
@@ -86,6 +86,7 @@ function handleClick(e) {
     draging.value = false
     stopWatchMousePos()
   } else {
+    stopWatchMousePos && stopWatchMousePos()
     draging.value = true
     ClickCoord.x = e.clientX
     ClickCoord.y = e.clientY
@@ -100,7 +101,9 @@ function handleClick(e) {
   }
 }
 
-
+/*
+处理连接结点逻辑
+ */
 function handleConnect(e: PointerEvent) {
   //不是保存结点位置，而是保存结点连接处中心位置
   //仅保存被连接的结点，而非所有结点
@@ -116,7 +119,6 @@ function handleConnect(e: PointerEvent) {
       outputDNodes.value.push(lastConnectedDNodesOutput.value)
       watchConnected()
     })
-
   } else {
     //判断是否即将连接相同的曲线
     if (inputDNodes.value.indexOf(preNodeID.value) != -1 || outputDNodes.value.indexOf(preNodeID.value) != -1) {
