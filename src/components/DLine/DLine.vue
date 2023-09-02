@@ -11,7 +11,7 @@ import {Coord, LineProps, useBindingNodeCoord} from "./useLine";
 import {useGlobalStateStore} from "../../store/globalState";
 import {useDNodesStore} from "../../store/DNodes";
 import {storeToRefs} from "pinia";
-import {getCoord} from "../DNode/useNode";
+import {getCoord, registerEventResponseHandler} from "../DNode/useNode";
 
 const props = defineProps<LineProps>()
 const {mousePos, ConnectingNodes, preNodeID} = storeToRefs(useGlobalStateStore())

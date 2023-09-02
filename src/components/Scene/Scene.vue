@@ -7,7 +7,13 @@
         <foreignObject width="192" height="128">
           <span
               class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 select-none"
-              @click.stop="addDNode">Badge</span>
+              @click.stop="addDNode">add</span>
+          <span
+              class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 select-none"
+              @click.stop="deleteNodes">delete</span>
+          <span
+              class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 select-none"
+              @click.stop="notifySpeciNode">notifySpeciNode</span>
         </foreignObject>
       </g>
       <g transform="matrix(1,0,0,1,0,0)">
@@ -48,8 +54,8 @@ function addDNode() {
   useDNodes.addDNode(id, title)
 }
 
-function click() {
-  useDNodes.deleteDNode(1)
+function deleteNodes() {
+  useDNodes.deleteDNode(1,'')
 }
 
 function updateMousePos(e: MouseEvent) {
@@ -66,6 +72,9 @@ function updateMousePos(e: MouseEvent) {
 function handleClickBlankArea() {
   //取消连接
   useGlobalState.cancelNodesConnecting()
+}
+function notifySpeciNode(){
+  // commitNodeEvent(2)
 }
 </script>
 
