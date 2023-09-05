@@ -19,13 +19,13 @@
 
 <script setup lang="ts">
 
-import {computed, onMounted, reactive, ref, watch, WatchStopHandle} from "vue";
+import {computed, onMounted, reactive, Ref, ref, watch, WatchStopHandle} from "vue";
 import {
   findRecordedNodeById,
   mapIdToCoord,
   nodeProps,
-  notifyEventResponseHandler,
-  registerEventResponseHandler, removeEventResponser
+  notifyEvent,
+  registeEvent, removeEvent
 } from "./useNode"
 import {Coord} from "../DLine/useLine";
 import {useLinesStore} from "../../store/DLines";
@@ -145,29 +145,22 @@ function handleConnect() {
     //绑定inputNode的id
     preNodeID.value = props.id
     ConnectingNodes.value = true
-    /*
-    观测是否成功连接直线，成功连接就记录下游结点。不同仅观察单个ref，因为output/input再二次连接时可能相同
-      watchConnected = watch(lastConnectedDNodesOutput, () => {
+
+    registeEvent("connectingEvent", () => {
       outputDNodes.value.push(lastConnectedDNodesOutput.value)
       connectedLines.value.push(lastConnectedDLinesID.value)
-      //订阅下游结点事件
-      registerEventResponseHandler(props.id,EventResponseFromOutputNode)
-      watchConnected()
-    })
-     */
-    registerEventResponseHandler("connectingEvent", () => {
-      outputDNodes.value.push(lastConnectedDNodesOutput.value)
-      connectedLines.value.push(lastConnectedDLinesID.value)
-      //订阅下游结点事件
-      registerEventResponseHandler(props.id, EventResponseFromOutputNode)
-      removeEventResponser("connectingEvent")
+      //订阅下游结点删除事件
+      registeEvent(props.id, (param) => handleEvent(param, 'out'))
+      //订阅结点线删除事件
+      registeEvent(props.id + 'removeLine', (param) => removeDLineRecord(param))
+      removeEvent("connectingEvent")
     })
   } else {
     //判断是否即将连接相同的曲线
     if (findRecordedNodeById(inputDNodes, preNodeID.value) != -1 || findRecordedNodeById(outputDNodes, preNodeID.value) != -1) {
       // === 处理连接失败 ===
       useGlobalState.cancelNodesConnecting()
-      removeEventResponser("connectingEvent")
+      removeEvent("connectingEvent")
       return;
     }
     //   ===  处理成功连接事件  ===
@@ -182,9 +175,11 @@ function handleConnect() {
       DNodesOutput: props.id,
       DLinesID: LineId
     })
-    notifyEventResponseHandler("connectingEvent", props.id)
+    notifyEvent("connectingEvent", '')
     // 订阅上游结点
-    registerEventResponseHandler(props.id + 'in', EventResponseFromInputNode)
+    registeEvent(props.id + 'in', (param) => handleEvent(param, 'in'))
+    // 订阅结点线删除事件
+    registeEvent(props.id + 'removeLine', removeDLineRecord)
     inputDNodes.value.push(preNodeID.value)
     connectedLines.value.push(LineId)
     useGlobalState.cancelNodesConnecting()
@@ -192,12 +187,22 @@ function handleConnect() {
 }
 
 function deleteNode() {
-  useDNodes.deleteDNode(props.index, connectedLines)
-  removeEventResponser(props.id)
   //相对于下游结点来说自身是上游
-  outputDNodes.value.forEach((id) => notifyEventResponseHandler(id + 'in', props.id))
+  outputDNodes.value.forEach((id) => notifyEvent(id + 'in', props.id))
   //相对于上游结点来说自身是下游
-  inputDNodes.value.forEach((id) => notifyEventResponseHandler(id + 'out', props.id))
+  inputDNodes.value.forEach((id) => notifyEvent(id + 'out', props.id))
+  //通知与自身连接的线被删除的消息
+  connectedLines.value.forEach((id) => notifyEvent(id, props.id))
+  useDNodes.deleteDNode(props.index, connectedLines)
+  removeEvent(props.id)
+}
+
+/*
+断开连接过的线
+ */
+function removeDLineRecord(lineid: string) {
+  let index = connectedLines.value.indexOf(lineid)
+  connectedLines.value.splice(index, 1)
 }
 
 function handleRemoveEvent(id) {
@@ -205,18 +210,16 @@ function handleRemoveEvent(id) {
 }
 
 /*
-处理来自上游结点的消息，目前仅'删除'消息
+处理来自上下游的结点
  */
-function EventResponseFromInputNode(fromId) {
-  let index = findRecordedNodeById(inputDNodes, fromId)
-  inputDNodes.value.splice(index, 1)
-}
-
-/*
-处理来自下游结点的消息
- */
-function EventResponseFromOutputNode(fromId) {
-  let index = findRecordedNodeById(outputDNodes, fromId)
-  inputDNodes.value.splice(index, 1)
+function handleEvent(param, messageOrg: 'in' | 'out') {
+  let oriRef: Ref<Array<string>>
+  if (messageOrg == 'in') {
+    oriRef = inputDNodes
+  } else {
+    oriRef = outputDNodes
+  }
+  let index = findRecordedNodeById(oriRef, param)
+  oriRef.value.splice(index, 1)
 }
 </script>

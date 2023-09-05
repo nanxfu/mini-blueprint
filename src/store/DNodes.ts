@@ -1,5 +1,5 @@
 import {defineStore} from "pinia";
-import {nodeProps, notifyEventResponseHandler} from "../components/DNode/useNode";
+import {nodeProps, notifyEvent} from "../components/DNode/useNode";
 
 export const useDNodesStore = defineStore('DNode', {
     state: () => ({
@@ -22,7 +22,6 @@ export const useDNodesStore = defineStore('DNode', {
          */
         deleteDNode(index, connectedLine){
             this.DNodes.splice(index,1)
-            connectedLine.value.forEach((id)=>notifyEventResponseHandler(id, ''))
         },
         _notifyNodeEvent(id:string){
 

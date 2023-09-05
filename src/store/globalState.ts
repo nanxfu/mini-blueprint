@@ -27,6 +27,9 @@ export const useGlobalStateStore = defineStore('globalState', {
             this.mousePos.x = pos.x
             this.mousePos.y = pos.y
         },
+        /*
+        取消结点连接
+         */
         cancelNodesConnecting(){
             this.ConnectingNodes = false
             this.preNodeID = ''

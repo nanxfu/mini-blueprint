@@ -19,7 +19,7 @@
       <g transform="matrix(1,0,0,1,0,0)">
         <d-node v-for="(DNode, index) in DNodes" :key="DNode.id" :index="index" :id="DNode.id" :title="DNode.title"
                 ref="itemRefs"></d-node>
-        <d-line v-for="(line,index) in lines" :key="index" :id="line.id" :index="index" :input-dnode="line.inputDnode"
+        <d-line v-for="(line,index) in lines" :key="line.id" :id="line.id" :index="index" :input-dnode="line.inputDnode"
                 :output-dnode="line.outputDnode" :is-connected-line="true"></d-line>
         <!--        v-show改成v-if会导致dProp失效？-->
         <d-line :is-connected-line="false" id="aaa" key="aaa" v-if="ConnectingNodes"></d-line>

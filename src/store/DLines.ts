@@ -9,8 +9,9 @@ export const useLinesStore = defineStore('lines', {
         addLines(vector:LineProps){
             this.lines.push(vector)
         },
-        fixLines(id, pos: Coord){
-
+        delLine(index){
+            console.log(index)
+            this.lines.splice(index,1)
         }
     }
 })
